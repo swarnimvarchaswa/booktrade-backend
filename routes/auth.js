@@ -269,13 +269,29 @@ router.put("/uploadProfilePic", requireLogin, async (req, res) => {
 });
 
 // Define a new GET route to fetch college names
-router.get("/colleges", (req, res) => {
-  // Query your database to retrieve a list of college names
-  USER.find({}, "collegeName", (err, users) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
+// router.get("/colleges", (req, res) => {
+//   // Query your database to retrieve a list of college names
+//   USER.find({}, "collegeName", (err, users) => {
+//     if (err) {
+//       console.error(err);
+//       return res.status(500).json({ error: "Internal server error" });
+//     }
+
+//     // Extract college names from user documents
+//     const collegeNames = users.map((user) => user.collegeName);
+
+//     // Remove duplicates and sort alphabetically (optional)
+//     const uniqueCollegeNames = [...new Set(collegeNames)].sort();
+
+//     // Send the list of college names as a JSON response
+//     res.json({ collegeNames: uniqueCollegeNames });
+//   });
+// });
+
+router.get("/colleges", async (req, res) => {
+  try {
+    // Query your database to retrieve a list of college names
+    const users = await USER.find({}, "collegeName");
 
     // Extract college names from user documents
     const collegeNames = users.map((user) => user.collegeName);
@@ -285,7 +301,10 @@ router.get("/colleges", (req, res) => {
 
     // Send the list of college names as a JSON response
     res.json({ collegeNames: uniqueCollegeNames });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;
