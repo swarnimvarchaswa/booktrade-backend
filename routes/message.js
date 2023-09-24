@@ -24,41 +24,15 @@ const moment = require("moment");
 
 //for delete messages
 // GET request to retrieve messages in a chat
-// router.get("/message/:chatId", requireLogin, async (req, res) => {
-//   try {
-//     const chatId = req.params.chatId;
-
-//     // Cleanup: Delete messages older than 24 hours
-//     const twentyFourHoursAgo = moment().subtract(24, "hours");
-//     await MESSAGE.deleteMany({
-//       chat: chatId,
-//       createdAt: { $lt: twentyFourHoursAgo },
-//     });
-
-//     // Fetch all messages in the specified chat
-//     const messages = await MESSAGE.find({ chat: chatId }).populate(
-//       "sender",
-//       "_id"
-//     );
-//     res.json({ messages });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-//for 30 days
 router.get("/message/:chatId", requireLogin, async (req, res) => {
   try {
     const chatId = req.params.chatId;
 
-    // Calculate the date 30 days ago using Moment.js
-    const thirtyDaysAgo = moment().subtract(30, "days");
-
-    // Cleanup: Delete messages older than 30 days
+    // Cleanup: Delete messages older than 24 hours
+    const twentyFourHoursAgo = moment().subtract(24, "hours");
     await MESSAGE.deleteMany({
       chat: chatId,
-      createdAt: { $lt: thirtyDaysAgo },
+      createdAt: { $lt: twentyFourHoursAgo },
     });
 
     // Fetch all messages in the specified chat
@@ -72,6 +46,32 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+//for 30 days
+// router.get("/message/:chatId", requireLogin, async (req, res) => {
+//   try {
+//     const chatId = req.params.chatId;
+
+//     // Calculate the date 30 days ago using Moment.js
+//     const thirtyDaysAgo = moment().subtract(30, "days");
+
+//     // Cleanup: Delete messages older than 30 days
+//     await MESSAGE.deleteMany({
+//       chat: chatId,
+//       createdAt: { $lt: thirtyDaysAgo },
+//     });
+
+//     // Fetch all messages in the specified chat
+//     const messages = await MESSAGE.find({ chat: chatId }).populate(
+//       "sender",
+//       "_id"
+//     );
+//     res.json({ messages });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 // POST request to send a new message
 router.post("/message", requireLogin, async (req, res) => {
