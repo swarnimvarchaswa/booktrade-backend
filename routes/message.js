@@ -92,7 +92,8 @@ router.post("/message", requireLogin, async (req, res) => {
     // Update the latestMessage field in the chat document with the message content
     await CHAT.findByIdAndUpdate(
       chatId,
-      { $set: { latestMessage: content } },
+      console.log(savedMessage._id),
+      { $set: { latestMessage: savedMessage._id } },
       { new: true }
     );
 
