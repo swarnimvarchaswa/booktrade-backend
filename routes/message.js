@@ -73,6 +73,7 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
 //   }
 // });
 
+
 // POST request to send a new message
 router.post("/message", requireLogin, async (req, res) => {
   try {
@@ -88,12 +89,15 @@ router.post("/message", requireLogin, async (req, res) => {
 
     // Save the message to the database
     const savedMessage = await newMessage.save();
+    // const messageID = savedMessage._id;
 
-    // Update the latestMessage field in the chat document with the message content
+    // Print the message ID to the console
+    console.log("Saved Message ID:", savedMessage.content);
+
+    // Update the latestMessage field in the chat document with the message ID
     await CHAT.findByIdAndUpdate(
       chatId,
-      console.log(savedMessage._id),
-      { $set: { latestMessage: savedMessage._id } },
+      { $set: { latestMessage: savedMessage.content  } },
       { new: true }
     );
 
