@@ -115,7 +115,7 @@ router.get("/readinglist", requireLogin, (req, res) => {
 });
 
 router.delete("/readinglist/:itemIndex", requireLogin, (req, res) => {
-  const itemIndex = req.params.itemIndex;
+  const itemIndex = parseInt(req.params.itemIndex);
   const userId = req.user._id;
 
   USER.findById(userId)
