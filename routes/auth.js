@@ -130,7 +130,7 @@ router.delete("/readinglist/:itemIndex", requireLogin, (req, res) => {
       }
 
       // Remove the item at the specified index
-      user.readingList.splice(itemIndex, 1);
+      const removedItem = user.readingList.splice(itemIndex, 1);
 
       // Save the updated user document
       user
