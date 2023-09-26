@@ -45,9 +45,9 @@ router.get("/chat", requireLogin, async (req, res) => {
       .populate("users", "_id name profilePic") // Populate the users field with user data
       .populate("latestMessage", "_id text createdAt sender"); // Populate the latestMessage field with message data
 
-    if (!chats || chats.length === 0) {
-      return res.status(404).json({ error: "No chats found for the user" });
-    }
+      if (!chats || chats.length === 0) {
+        return res.json([]); // Return an empty array
+      }
 
     // Modify each chat object to exclude the current user and keep only the other user's information
     const modifiedChats = chats.map((chat) => {
