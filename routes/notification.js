@@ -167,12 +167,6 @@ router.put("/exchangebook", requireLogin, async (req, res) => {
       return res.status(404).json({ error: "Notification not found" });
     }
 
-        // Check if there is a borrow request for this notification
-        if (notification.request === "borrow") {
-          // If a borrow request exists, you can skip the exchange part
-          return res.json({ message: "Borrow request exists, skip exchange" });
-        }
-
     // Check if the user making the request is one of the owners involved in the exchange
     if (
       notification.ownerId.toString() !== req.user._id.toString() &&
