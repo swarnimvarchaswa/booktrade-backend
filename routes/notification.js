@@ -158,6 +158,7 @@ router.put("/exchange", requireLogin, async (req, res) => {
 router.put("/exchangebook", requireLogin, async (req, res) => {
   try {
     const { notificationId } = req.body; // Get notificationId from the request body
+    const {loggedIn} = req.user._id;
 
     // Find the notification by ID
     const notification = await NOTIFICATION.findById(notificationId);
@@ -165,6 +166,12 @@ router.put("/exchangebook", requireLogin, async (req, res) => {
     if (!notification) {
       return res.status(404).json({ error: "Notification not found" });
     }
+
+        // Check if there is a borrow request for this notification
+        if (notification.request === "borrow") {
+          // If a borrow request exists, you can skip the exchange part
+          return res.json({ message: "Borrow request exists, skip exchange" });
+        }
 
     // Check if the user making the request is one of the owners involved in the exchange
     if (
