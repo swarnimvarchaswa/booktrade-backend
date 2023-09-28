@@ -307,4 +307,59 @@ router.get("/colleges", async (req, res) => {
   }
 });
 
+// Define a new PUT route to update the notificationCheck field
+router.put("/updateNotificationCheck", requireLogin, (req, res) => {
+  const userId = req.user._id;
+
+  // You can specify the new date and time value to save
+  const newNotificationCheckDate = new Date(); // This will use the current date and time
+
+  // Find the user by their ID
+  USER.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Update the user's notificationCheck field
+      user.notificationCheck = newNotificationCheckDate;
+
+      // Save the updated user document
+      user
+        .save()
+        .then(() => {
+          res.json({ message: "Notification check updated successfully" });
+        })
+        .catch((err) => {
+          console.error(err);
+          return res.status(500).json({ error: "Internal server error" });
+        });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "Internal server error" });
+    });
+});
+
+// Define a new GET route to retrieve the notificationCheck value
+router.get("/getNotificationCheck", requireLogin, (req, res) => {
+  const userId = req.user._id;
+
+  // Find the user by their ID
+  USER.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Retrieve and send the user's notificationCheck value
+      const notificationCheck = user.notificationCheck;
+      res.json({ notificationCheck });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "Internal server error" });
+    });
+});
+
 module.exports = router;
