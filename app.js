@@ -43,16 +43,44 @@ const io = require("socket.io")(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  // console.log("connected to socket.io");
+const isOnline = new Set();
 
-  socket.on("setup", (userData) => {
-    socket.join(userData._id);
-    // console.log(userData._id);
-    socket.emit("connected");
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  //handle user setup
+  socket.on("setup", async (userData) => {
+    try {
+      // Join user to their own room (using their user ID)
+      socket.join(userData._id);
+
+      //add user to the set of online users
+      isOnline.add(userData._id);
+
+      //broadcast updated online user list to all clients
+      io.emit("updateIsOnline", Array.from(isOnline));
+
+      //acknowledge the setup
+      socket.emit("connected");
+    } catch (error) {
+      console.error("Error setting up user:", error);
+    }
   });
 
+  //handle disconnection
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
 
+  try {
+    //remove user from set online users
+    isOnline.delete(socket.id);
+
+    //broadcast updated online user list to all
+    io.emit("updateIsOnline", Array.from(isOnline));
+  } catch (error) {
+    console.log("Error handeling user disconnect:", error);
+  }
 
   socket.on("join chat", (room) => {
     socket.join(room);
@@ -62,13 +90,13 @@ io.on("connection", (socket) => {
   socket.on("new message", (newMessageReceived) => {
     // console.log("New message received:", newMessageReceived);
     const { chat, sender, content } = newMessageReceived;
-  
+
     // Check if chat and sender are defined
     if (!chat || !sender || !content) {
       console.log("Invalid message format");
       return;
     }
-  
+
     // Broadcast the message to all users in the chat except the sender
     socket.to(chat._id).emit("message received", newMessageReceived);
   });
@@ -77,5 +105,4 @@ io.on("connection", (socket) => {
     // console.log("Socket disconnected");
   });
 });
-
-
+ 

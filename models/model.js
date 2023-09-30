@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
   notificationCheck: {
     type: Date,
   },
+  isOnline: {
+    type: Boolean,
+    default: false
+  }
 });
 
 mongoose.model("USER", userSchema);
