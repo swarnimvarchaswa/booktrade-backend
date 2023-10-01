@@ -14,9 +14,6 @@ router.get("/", (req, res) => {
 router.post("/signup", (req, res) => {
   const { name, email, collegeName, collegeDegree, year, password } = req.body;
 
-  // if (!name || !email || !collegeName || !year || !password) {
-  //   return res.status(422).json({ error: "Please add all the fields" });
-  // }
   if (!name) {
     return res.status(422).json({ error: "nameError" });
   } else if (!collegeName) {

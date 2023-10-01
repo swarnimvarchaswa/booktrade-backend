@@ -43,44 +43,9 @@ const io = require("socket.io")(server, {
   },
 });
 
-const isOnline = new Set();
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
-
-  //handle user setup
-  socket.on("setup", async (userData) => {
-    try {
-      // Join user to their own room (using their user ID)
-      socket.join(userData._id);
-
-      //add user to the set of online users
-      isOnline.add(userData._id);
-
-      //broadcast updated online user list to all clients
-      io.emit("updateIsOnline", Array.from(isOnline));
-
-      //acknowledge the setup
-      socket.emit("connected");
-    } catch (error) {
-      console.error("Error setting up user:", error);
-    }
-  });
-
-  //handle disconnection
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-
-  try {
-    //remove user from set online users
-    isOnline.delete(socket.id);
-
-    //broadcast updated online user list to all
-    io.emit("updateIsOnline", Array.from(isOnline));
-  } catch (error) {
-    console.log("Error handeling user disconnect:", error);
-  }
 
   socket.on("join chat", (room) => {
     socket.join(room);
