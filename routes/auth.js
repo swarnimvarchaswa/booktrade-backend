@@ -359,4 +359,54 @@ router.get("/getNotificationCheck", requireLogin, (req, res) => {
     });
 });
 
+router.put("/makeOnline", requireLogin, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Find the user by ID
+    const user = await USER.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user's profilePic field
+    user.isOnline = true;
+    await user.save();
+
+    // console.log("Updated User:", user);
+
+    // Return the updated user with the new profile picture URL
+    res.json(user.isOnline);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error d" });
+  }
+});
+
+router.put("/makeOffline", requireLogin, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Find the user by ID
+    const user = await USER.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user's profilePic field
+    user.isOnline = false;
+    await user.save();
+
+    // console.log("Updated User:", user);
+
+    // Return the updated user with the new profile picture URL
+    res.json(user.isOnline);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error d" });
+  }
+});
+
 module.exports = router;

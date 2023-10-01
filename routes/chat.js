@@ -42,7 +42,7 @@ router.get("/chat", requireLogin, async (req, res) => {
     // Find all chats where the user is a member
     const chats = await CHAT.find({ users: userId })
       .sort({ "updatedAt": -1 })
-      .populate("users", "_id name profilePic") // Populate the users field with user data
+      .populate("users", "_id name profilePic isOnline") // Populate the users field with user data
       .populate("latestMessage", "_id text createdAt sender"); // Populate the latestMessage field with message data
 
       if (!chats || chats.length === 0) {
