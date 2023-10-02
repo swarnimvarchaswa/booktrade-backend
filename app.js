@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const { mongoUrl } = require("./keys.js");
 const cors = require("cors");
 
+const USER = require("./models/model.js");
+
 app.use(cors());
 require("./models/model");
 require("./models/post");
@@ -40,12 +42,33 @@ const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
     origin: "https://booktrade.onrender.com",
+    // origin: "http://localhost:3000",
   },
 });
 
+// var usp = io.of("/user-namespace");
 
-io.on("connection", (socket) => {
+// usp.on("connection", async function(socket){
+//   console.log("user connected name space")
+
+//   console.log(socket)
+
+//   socket.on("disconnect", function() {
+//     console.log("User disconnected")
+//   })
+// })
+
+io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
+
+  console.log(socket.handshake.auth.token);
+  const userId = socket.handshake.auth.token;
+
+  await USER.findByIdAndUpdate({ _id: userId }, { $set: { isOnline: true } });
+
+  //user broadcast online status
+
+  socket.broadcast.emit("getOnlineUser", { user_id: userId });
 
   socket.on("join chat", (room) => {
     socket.join(room);
@@ -66,8 +89,17 @@ io.on("connection", (socket) => {
     socket.to(chat._id).emit("message received", newMessageReceived);
   });
 
-  socket.on("disconnect", () => {
-    // console.log("Socket disconnected");
+  socket.on("disconnect", async function () {
+    console.log("Socket disconnected");
+
+    var userId = socket.handshake.auth.token;
+
+    await USER.findByIdAndUpdate(
+      { _id: userId },
+      { $set: { isOnline: false } }
+    );
+
+    //user broadcast offline status
+    socket.broadcast.emit("getOfflineUser", { user_id: userId });
   });
 });
- 
