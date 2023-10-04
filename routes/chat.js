@@ -76,7 +76,7 @@ router.get("/chat/:chatId", requireLogin, async (req, res) => {
     // Find the chat with the given chatId
     const chat = await CHAT.findById(chatId).populate(
       "users",
-      "_id name profilePic"
+      "_id name profilePic isOnline"
     );
 
     if (!chat) {
