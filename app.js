@@ -60,6 +60,7 @@ const io = require("socket.io")(server, {
 
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
+  // console.log("User connected socket:", socket);
 
   console.log(socket.handshake.auth.token);
   const userId = socket.handshake.auth.token;
@@ -73,6 +74,11 @@ io.on("connection", async (socket) => {
   socket.on("join chat", (room) => {
     socket.join(room);
     // console.log("User joined room:" + room);
+  });
+
+  socket.on("leave chat", (room) => {
+    socket.leave(room);
+    // console.log("User left room:" + room);
   });
 
   socket.on("new message", (newMessageReceived) => {
