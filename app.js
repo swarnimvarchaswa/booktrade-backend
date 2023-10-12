@@ -4,7 +4,7 @@ const PORT = process.env.port || 5000;
 const mongoose = require("mongoose");
 const { mongoUrl } = require("./keys.js");
 const cors = require("cors");
-const { v4: uuidv4} = require("uuid")
+const { v4: uuidv4 } = require("uuid");
 const USER = require("./models/model.js");
 
 app.use(cors());
@@ -73,12 +73,13 @@ io.on("connection", async (socket) => {
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    // console.log("User joined room:" + room);
+    console.log("User joined room:" + room);
+    // console.log(socket);
   });
 
   socket.on("leave chat", (room) => {
     socket.leave(room);
-    // console.log("User left room:" + room);
+    console.log("User left room:" + room);
   });
 
   socket.on("new message", (newMessageReceived) => {
@@ -92,10 +93,13 @@ io.on("connection", async (socket) => {
     }
 
     // Generate a unique message ID (you can use a library like uuid)
-    const messageId = uuidv4();
+    // const messageId = uuidv4();
 
     // Broadcast the message to all users in the chat except the sender
     socket.to(chat._id).emit("message received", newMessageReceived);
+
+    // Broadcast the message to all connected sockets except the sender
+    socket.broadcast.emit("new notification", newMessageReceived);
   });
 
   socket.on("disconnect", async function () {
