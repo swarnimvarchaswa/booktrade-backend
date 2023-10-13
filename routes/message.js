@@ -33,6 +33,7 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
     const twentyFourHoursAgo = moment().subtract(24, "hours");
     await MESSAGE.deleteMany({
       chat: chatId,
+      isRead: true,
       createdAt: { $lt: twentyFourHoursAgo },
     });
 
@@ -109,5 +110,22 @@ router.post("/message", requireLogin, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.put("/messageRead/:chatId", requireLogin, async (req, res) => {
+  try {
+    const chatId = req.params.chatId;
+    const userId = req.user._id
+
+    const result = await MESSAGE.updateMany(
+      { chat: chatId, sender: { $ne: userId}},
+      {$set: {isRead: true}}
+    )
+
+    res.json({success: true, message: "message mark as read", result })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "internal server error"})
+  }
+})
 
 module.exports = router;

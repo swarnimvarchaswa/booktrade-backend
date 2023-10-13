@@ -39,33 +39,24 @@ const server = app.listen(PORT, () => {
 });
 
 const io = require("socket.io")(server, {
-  pingTimeout: 60000,
+  pingTimeout: 300000,
   cors: {
     origin: "https://booktrade.onrender.com",
     // origin: "http://localhost:3000",
   },
 });
 
-// var usp = io.of("/user-namespace");
-
-// usp.on("connection", async function(socket){
-//   console.log("user connected name space")
-
-//   console.log(socket)
-
-//   socket.on("disconnect", function() {
-//     console.log("User disconnected")
-//   })
-// })
-
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
   // console.log("User connected socket:", socket);
 
-  console.log(socket.handshake.auth.token);
+  // console.log(socket.handshake.auth.token);
   const userId = socket.handshake.auth.token;
 
-  await USER.findByIdAndUpdate({ _id: userId }, { $set: { isOnline: true } });
+  await USER.findByIdAndUpdate(
+    { _id: userId },
+    { $set: { isOnline: true } }
+  ).exec();
 
   //user broadcast online status
 
@@ -95,11 +86,13 @@ io.on("connection", async (socket) => {
     // Generate a unique message ID (you can use a library like uuid)
     // const messageId = uuidv4();
 
-    // Broadcast the message to all users in the chat except the sender
+    // Broadcast the message to all users in the chat except the sender                           { except: [socket.id, chat._id] }
+
     socket.to(chat._id).emit("message received", newMessageReceived);
 
     // Broadcast the message to all connected sockets except the sender
-    socket.broadcast.emit("new notification", newMessageReceived);
+
+      socket.broadcast.emit("new notification", newMessageReceived, {except: [chat._id]});
   });
 
   socket.on("disconnect", async function () {
@@ -110,7 +103,7 @@ io.on("connection", async (socket) => {
     await USER.findByIdAndUpdate(
       { _id: userId },
       { $set: { isOnline: false } }
-    );
+    ).exec();
 
     //user broadcast offline status
     socket.broadcast.emit("getOfflineUser", { user_id: userId });
