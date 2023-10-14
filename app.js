@@ -46,6 +46,8 @@ const io = require("socket.io")(server, {
   },
 });
 
+const activeChats = new Set();
+
 io.on("connection", async (socket) => {
   console.log("User connected:", socket.id);
   // console.log("User connected socket:", socket);
@@ -66,11 +68,15 @@ io.on("connection", async (socket) => {
     socket.join(room);
     console.log("User joined room:" + room);
     // console.log(socket);
+
+    activeChats.add(room);
   });
 
   socket.on("leave chat", (room) => {
     socket.leave(room);
     console.log("User left room:" + room);
+
+    activeChats.delete(room);
   });
 
   socket.on("new message", (newMessageReceived) => {
@@ -91,8 +97,12 @@ io.on("connection", async (socket) => {
     socket.to(chat._id).emit("message received", newMessageReceived);
 
     // Broadcast the message to all connected sockets except the sender
+    console.log(activeChats)
+    console.log(newMessageReceived.chat._id)
 
-      socket.broadcast.emit("new notification", newMessageReceived, {except: [chat._id]});
+    if (!activeChats.has(newMessageReceived.chat._id)) {
+      socket.broadcast.emit("new notification", newMessageReceived);
+    }
   });
 
   socket.on("disconnect", async function () {
