@@ -44,7 +44,7 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
       "_id"
     );
 
-    await MessageChannel.updateMany(
+    await MESSAGE.updateMany(
       { chat: chatId, sender: { $ne: userId }, isRead: false },
       { $set: { isRead: true }}
     )
