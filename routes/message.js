@@ -28,6 +28,7 @@ const moment = require("moment");
 router.get("/message/:chatId", requireLogin, async (req, res) => {
   try {
     const chatId = req.params.chatId;
+    const userId = req.user._id;
 
     // Cleanup: Delete messages older than 24 hours
     const twentyFourHoursAgo = moment().subtract(24, "hours");
@@ -42,6 +43,11 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
       "sender",
       "_id"
     );
+
+    await MessageChannel.updateMany(
+      { chat: chatId, sender: { $ne: userId }, isRead: false },
+      { $set: { isRead: true }}
+    )
     res.json({ messages });
   } catch (error) {
     console.error(error);
@@ -111,21 +117,21 @@ router.post("/message", requireLogin, async (req, res) => {
   }
 });
 
-router.put("/messageRead/:chatId", requireLogin, async (req, res) => {
-  try {
-    const chatId = req.params.chatId;
-    const userId = req.user._id
+// router.put("/messageRead/:chatId", requireLogin, async (req, res) => {
+//   try {
+//     const chatId = req.params.chatId;
+//     const userId = req.user._id
 
-    const result = await MESSAGE.updateMany(
-      { chat: chatId, sender: { $ne: userId}},
-      {$set: {isRead: true}}
-    )
+//     const result = await MESSAGE.updateMany(
+//       { chat: chatId, sender: { $ne: userId}},
+//       {$set: {isRead: true}}
+//     )
 
-    res.json({success: true, message: "message mark as read", result })
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "internal server error"})
-  }
-})
+//     res.json({success: true, message: "message mark as read", result })
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "internal server error"})
+//   }
+// })
 
 module.exports = router;

@@ -49,7 +49,7 @@ const io = require("socket.io")(server, {
 const activeChats = new Set();
 
 io.on("connection", async (socket) => {
-  console.log("User connected:", socket.id);
+  console.log("User connected:", socket.id); //11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
   // console.log("User connected socket:", socket);
 
   // console.log(socket.handshake.auth.token);
@@ -57,7 +57,7 @@ io.on("connection", async (socket) => {
 
   await USER.findByIdAndUpdate(
     { _id: userId },
-    { $set: { isOnline: true } }
+    { $set: { isOnline: true }}
   ).exec();
 
   //user broadcast online status
@@ -66,7 +66,7 @@ io.on("connection", async (socket) => {
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    console.log("User joined room:" + room);
+    console.log("User joined room:" + room); //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
     // console.log(socket);
 
     activeChats.add(room);
@@ -74,7 +74,7 @@ io.on("connection", async (socket) => {
 
   socket.on("leave chat", (room) => {
     socket.leave(room);
-    console.log("User left room:" + room);
+    console.log("User left room:" + room); //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222
 
     activeChats.delete(room);
   });
