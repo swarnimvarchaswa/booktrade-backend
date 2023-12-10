@@ -117,21 +117,4 @@ router.post("/message", requireLogin, async (req, res) => {
   }
 });
 
-// router.put("/messageRead/:chatId", requireLogin, async (req, res) => {
-//   try {
-//     const chatId = req.params.chatId;
-//     const userId = req.user._id
-
-//     const result = await MESSAGE.updateMany(
-//       { chat: chatId, sender: { $ne: userId}},
-//       {$set: {isRead: true}}
-//     )
-
-//     res.json({success: true, message: "message mark as read", result })
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "internal server error"})
-//   }
-// })
-
 module.exports = router;
