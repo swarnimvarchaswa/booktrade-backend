@@ -35,7 +35,7 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
     await MESSAGE.deleteMany({
       chat: chatId,
       isRead: true,
-      createdAt: { $lt: twentyFourHoursAgo },
+      updatedAt: { $lt: twentyFourHoursAgo },
     });
 
     // Fetch all messages in the specified chat
