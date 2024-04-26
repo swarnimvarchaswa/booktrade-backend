@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 // const PORT = process.env.port || 5000;
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 5000;
 const mongoose = require("mongoose");
-const { mongoUrl } = require("./keys.js");
+const { mongoUrl } = require("./keys.env");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const USER = require("./models/model.js");
