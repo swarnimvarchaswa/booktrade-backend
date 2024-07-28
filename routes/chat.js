@@ -3,7 +3,9 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const USER = mongoose.model("USER");
 const jwt = require("jsonwebtoken");
-const { jwt_secret } = require("../keys.js");
+// const { jwt_secret } = require("../keys.js");
+const jwt_secret = process.env.jwt_secret;
+
 const requireLogin = require("../middlewares/requireLogin");
 const CHAT = mongoose.model("CHAT");
 
