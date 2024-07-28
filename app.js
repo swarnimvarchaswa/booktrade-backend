@@ -3,7 +3,12 @@ const app = express();
 // const PORT = process.env.port || 5000;
 const PORT = process.env.PORT || 5000;
 const mongoose = require("mongoose");
-const { mongoUrl } = require("./keys.env");
+
+
+// const { mongoUrl } = require("./keys.js");
+require("dotenv").config()
+const mongoUrl = process.env.mongoUrl
+
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const USER = require("./models/model.js");
