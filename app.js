@@ -47,7 +47,7 @@ const server = app.listen(PORT, () => {
 const io = require("socket.io")(server, {
   pingTimeout: 300000,
   cors: {
-    origin: "https://booktrade-backend.vercel.app",
+    origin: ["https://booktrade-backend.vercel.app", "https://booktrade.onrender.com/"]
     // origin: "http://localhost:3000",
   },
 });
