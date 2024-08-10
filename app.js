@@ -6,7 +6,8 @@ const mongoose = require("mongoose");
 
 
 // const { mongoUrl } = require("./keys.js");
-require("dotenv").config()
+require("dotenv").config();
+
 const mongoUrl = process.env.mongoUrl
 
 const cors = require("cors");
@@ -55,27 +56,27 @@ const server = app.listen(PORT, () => {
 
 // app.use(cors(corsOptions));
 
-// const io = require("socket.io")(server, {
-//   pingTimeout: 300000,
-//   cors: {
-//     origin: "https://booktrade-api.onrender.com",
-//     // origin: "http://localhost:3000",
-//   },
-// });
-
-
 const io = require("socket.io")(server, {
   pingTimeout: 300000,
   cors: {
-    origin: [
-      "https://booktrade.onrender.com", // Frontend domain
-      "https://booktrade-api.onrender.com" // Backend domain
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    origin: "https://booktrade-api.onrender.com",
+    // origin: "http://localhost:3000",
   },
 });
+
+
+// const io = require("socket.io")(server, {
+//   pingTimeout: 300000,
+//   cors: {
+//     origin: [
+//       "https://booktrade.onrender.com", // Frontend domain
+//       "https://booktrade-api.onrender.com" // Backend domain
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   },
+// });
 
 
 
