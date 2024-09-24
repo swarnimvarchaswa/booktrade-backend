@@ -45,6 +45,8 @@ const server = app.listen(PORT, () => {
   console.log("server is running on " + PORT);
 });
 
+// dont use this
+
 // const corsOptions = {
 //   origin: ['https://book-trade.vercel.app', // Your frontend domain
 //     "https://booktrade-backend.vercel.app" // Backend domain
@@ -56,6 +58,10 @@ const server = app.listen(PORT, () => {
 
 // app.use(cors(corsOptions));
 
+
+
+// commenting out for safety
+
 // const io = require("socket.io")(server, {
 //   pingTimeout: 300000,
 //   cors: {
@@ -65,91 +71,93 @@ const server = app.listen(PORT, () => {
 // });
 
 
-const io = require("socket.io")(server, {
-  pingTimeout: 300000,
-  cors: {
-    origin: [
-      "https://book-trade.vercel.app", // Frontend domain
-      "https://booktrade-backend.vercel.app" // Backend domain
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  },
-});
+// later attempts
+
+// const io = require("socket.io")(server, {
+//   pingTimeout: 300000,
+//   cors: {
+//     origin: [
+//       "https://book-trade.vercel.app", // Frontend domain
+//       "https://booktrade-backend.vercel.app" // Backend domain
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   },
+// });
 
 
 
-const activeChats = new Set();
+// const activeChats = new Set();
 
-io.on("connection", async (socket) => {
-  // console.log("User connected:", socket.id);                //11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-  // console.log("User connected socket:", socket);
+// io.on("connection", async (socket) => {
+//   // console.log("User connected:", socket.id);                //11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+//   // console.log("User connected socket:", socket);
 
-  // console.log(socket.handshake.auth.token);
-  const userId = socket.handshake.auth.token;
+//   // console.log(socket.handshake.auth.token);
+//   const userId = socket.handshake.auth.token;
 
-  await USER.findByIdAndUpdate(
-    { _id: userId },
-    { $set: { isOnline: true }}
-  ).exec();
+//   await USER.findByIdAndUpdate(
+//     { _id: userId },
+//     { $set: { isOnline: true }}
+//   ).exec();
 
-  //user broadcast online status
+//   //user broadcast online status
 
-  socket.broadcast.emit("getOnlineUser", { user_id: userId });
+//   socket.broadcast.emit("getOnlineUser", { user_id: userId });
 
-  socket.on("join chat", (room) => {
-    socket.join(room);
-    // console.log("User joined room:" + room);                         //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-    // console.log(socket);
+//   socket.on("join chat", (room) => {
+//     socket.join(room);
+//     // console.log("User joined room:" + room);                         //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+//     // console.log(socket);
 
-    activeChats.add(room);
-  });
+//     activeChats.add(room);
+//   });
 
-  socket.on("leave chat", (room) => {
-    socket.leave(room);
-    // console.log("User left room:" + room);                  //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+//   socket.on("leave chat", (room) => {
+//     socket.leave(room);
+//     // console.log("User left room:" + room);                  //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222
 
-    activeChats.delete(room);
-  });
+//     activeChats.delete(room);
+//   });
 
-  socket.on("new message", (newMessageReceived) => {
-    // console.log("New message received:", newMessageReceived);
-    const { chat, sender, content } = newMessageReceived;
+//   socket.on("new message", (newMessageReceived) => {
+//     // console.log("New message received:", newMessageReceived);
+//     const { chat, sender, content } = newMessageReceived;
 
-    // Check if chat and sender are defined
-    if (!chat || !sender || !content) {
-      console.log("Invalid message format");
-      return;
-    }
+//     // Check if chat and sender are defined
+//     if (!chat || !sender || !content) {
+//       console.log("Invalid message format");
+//       return;
+//     }
 
-    // Generate a unique message ID (you can use a library like uuid)
-    // const messageId = uuidv4();
+//     // Generate a unique message ID (you can use a library like uuid)
+//     // const messageId = uuidv4();
 
-    // Broadcast the message to all users in the chat except the sender                           { except: [socket.id, chat._id] }
+//     // Broadcast the message to all users in the chat except the sender                           { except: [socket.id, chat._id] }
 
-    socket.to(chat._id).emit("message received", newMessageReceived);
+//     socket.to(chat._id).emit("message received", newMessageReceived);
 
-    // Broadcast the message to all connected sockets except the sender
-    // console.log(activeChats)
-    // console.log(newMessageReceived.chat._id)
+//     // Broadcast the message to all connected sockets except the sender
+//     // console.log(activeChats)
+//     // console.log(newMessageReceived.chat._id)
 
-    if (!activeChats.has(newMessageReceived.chat._id)) {
-      socket.broadcast.emit("new notification", newMessageReceived);
-    }
-  });
+//     if (!activeChats.has(newMessageReceived.chat._id)) {
+//       socket.broadcast.emit("new notification", newMessageReceived);
+//     }
+//   });
 
-  socket.on("disconnect", async function () {
-    // console.log("Socket disconnected");
+//   socket.on("disconnect", async function () {
+//     // console.log("Socket disconnected");
 
-    var userId = socket.handshake.auth.token;
+//     var userId = socket.handshake.auth.token;
 
-    await USER.findByIdAndUpdate(
-      { _id: userId },
-      { $set: { isOnline: false } }
-    ).exec();
+//     await USER.findByIdAndUpdate(
+//       { _id: userId },
+//       { $set: { isOnline: false } }
+//     ).exec();
 
-    //user broadcast offline status
-    socket.broadcast.emit("getOfflineUser", { user_id: userId });
-  });
-});
+//     //user broadcast offline status
+//     socket.broadcast.emit("getOfflineUser", { user_id: userId });
+//   });
+// });
