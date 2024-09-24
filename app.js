@@ -46,8 +46,8 @@ const server = app.listen(PORT, () => {
 });
 
 // const corsOptions = {
-//   origin: ['https://booktrade.onrender.com', // Your frontend domain
-//     "https://booktrade-api.onrender.com" // Backend domain
+//   origin: ['https://book-trade.vercel.app', // Your frontend domain
+//     "https://booktrade-backend.vercel.app" // Backend domain
 //   ],
 //   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
 //   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
@@ -59,7 +59,7 @@ const server = app.listen(PORT, () => {
 // const io = require("socket.io")(server, {
 //   pingTimeout: 300000,
 //   cors: {
-//     origin: "https://booktrade-api.onrender.com",
+//     origin: "https://booktrade-backend.vercel.app",
 //     // origin: "http://localhost:3000",
 //   },
 // });
@@ -69,8 +69,8 @@ const io = require("socket.io")(server, {
   pingTimeout: 300000,
   cors: {
     origin: [
-      "https://booktrade.onrender.com", // Frontend domain
-      "https://booktrade-api.onrender.com" // Backend domain
+      "https://book-trade.vercel.app", // Frontend domain
+      "https://booktrade-backend.vercel.app" // Backend domain
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
