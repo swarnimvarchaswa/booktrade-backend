@@ -26,48 +26,17 @@ const moment = require("moment");
 //for delete messages
 // GET request to retrieve messages in a chat
 
-router.get("/message/:chatId", requireLogin, async (req, res) => {
-  try {
-    const chatId = req.params.chatId;
-    const userId = req.user._id;
-
-    // Cleanup: Delete messages older than 24 hours
-    const twentyFourHoursAgo = moment().subtract(24, "hours");
-    await MESSAGE.deleteMany({
-      chat: chatId,
-      isRead: true,
-      updatedAt: { $lt: twentyFourHoursAgo },
-    });
-
-    // Fetch all messages in the specified chat
-    const messages = await MESSAGE.find({ chat: chatId }).populate(
-      "sender",
-      "_id"
-    );
-
-    await MESSAGE.updateMany(
-      { chat: chatId, sender: { $ne: userId }, isRead: false },
-      { $set: { isRead: true }}
-    )
-    res.json({ messages });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-//for 30 days
 // router.get("/message/:chatId", requireLogin, async (req, res) => {
 //   try {
 //     const chatId = req.params.chatId;
+//     const userId = req.user._id;
 
-//     // Calculate the date 30 days ago using Moment.js
-//     const thirtyDaysAgo = moment().subtract(30, "days");
-
-//     // Cleanup: Delete messages older than 30 days
+//     // Cleanup: Delete messages older than 24 hours
+//     const twentyFourHoursAgo = moment().subtract(24, "hours");
 //     await MESSAGE.deleteMany({
 //       chat: chatId,
-//       createdAt: { $lt: thirtyDaysAgo },
+//       isRead: true,
+//       updatedAt: { $lt: twentyFourHoursAgo },
 //     });
 
 //     // Fetch all messages in the specified chat
@@ -75,12 +44,43 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
 //       "sender",
 //       "_id"
 //     );
+
+//     await MESSAGE.updateMany(
+//       { chat: chatId, sender: { $ne: userId }, isRead: false },
+//       { $set: { isRead: true }}
+//     )
 //     res.json({ messages });
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
+
+//for 30 days
+router.get("/message/:chatId", requireLogin, async (req, res) => {
+  try {
+    const chatId = req.params.chatId;
+
+    // Calculate the date 30 days ago using Moment.js
+    const thirtyDaysAgo = moment().subtract(30, "days");
+
+    // Cleanup: Delete messages older than 30 days
+    await MESSAGE.deleteMany({
+      chat: chatId,
+      createdAt: { $lt: thirtyDaysAgo },
+    });
+
+    // Fetch all messages in the specified chat
+    const messages = await MESSAGE.find({ chat: chatId }).populate(
+      "sender",
+      "_id"
+    );
+    res.json({ messages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 // POST request to send a new message
@@ -117,5 +117,20 @@ router.post("/message", requireLogin, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.put("/messageRead/:chatId", requireLogin, async (req, res) => {
+  try {
+    const chatId = req.params.chatId;
+    const userId = req.user._id
+    const result = await MESSAGE.updateMany(
+      { chat: chatId, sender: { $ne: userId}},
+      {$set: {isRead: true}}
+    )
+    res.json({success: true, message: "message mark as read", result })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "internal server error"})
+  }
+})
 
 module.exports = router;
