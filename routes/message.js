@@ -82,7 +82,6 @@ router.get("/message/:chatId", requireLogin, async (req, res) => {
   }
 });
 
-
 // POST request to send a new message
 
 router.post("/message", requireLogin, async (req, res) => {
